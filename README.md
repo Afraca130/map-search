@@ -1,6 +1,4 @@
-# POI 관리 시스템
-
-고급 데이터베이스 동기화, 데이터 검증 및 API 문서화 기능을 갖춘 현대적인 Node.js 기반 POI(관심 지점) 관리 애플리케이션입니다.
+# 맵 서치
 
 ## 🚀 주요 기능
 
@@ -177,4 +175,5 @@ docker-compose down
 | `/api/poi/search`   | GET    | 이름으로 POI 검색              |
 
 ---
+
 # map-search
