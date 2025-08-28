@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+    app:
+        build: .
+        ports:
+            - '3535:3535'
+        environment:
+            - NODE_ENV=${NODE_ENV}
+            - DB_HOST=${DB_HOST}
+            - DB_USER=${DB_USER}
+            - DB_PASSWORD=${DB_PASSWORD}
+            - DB_NAME=${DB_NAME}
+            - DB_PORT=${DB_PORT}
+            - TMAP_API_KEY=${TMAP_API_KEY}
+        depends_on:
+            postgres:
+                condition: service_healthy # healthcheck 대기
+        volumes:
+            - ./uploads:/usr/src/app/uploads
+        networks:
+            - app-network
+
+    postgres:
+        image: postgres:15-alpine
+        environment:
+            POSTGRES_DB: codingTest
+            POSTGRES_USER: pgadmin
+            POSTGRES_PASSWORD: 1234
+            # POSTGRES_HOST 제거 (불필요)
+        ports:
+            - '5432:5432'
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - app-network
+        # healthcheck 추가
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U pgadmin -d codingTest']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+volumes:
+    postgres_data:
+
+networks:
+    app-network:
+        driver: bridge

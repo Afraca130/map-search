@@ -1,0 +1,72 @@
+{
+    "name": "tmapcodingtest",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "start": "node app.js",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
+        "test:coverage-ci": "jest --coverage --ci --watchAll=false",
+        "build:css": "tailwindcss -i ./src/styles/tailwind.css -o ./public/stylesheets/tailwind.css --minify"
+    },
+    "dependencies": {
+        "cookie-parser": "~1.4.4",
+        "debug": "~2.6.9",
+        "dotenv": "^17.2.1",
+        "ejs": "~2.6.1",
+        "express": "~4.16.1",
+        "extend": "^3.0.2",
+        "http-errors": "~1.6.3",
+        "morgan": "~1.9.1",
+        "multer": "^2.0.2",
+        "mybatis-mapper": "^0.8.0",
+        "pg": "^8.16.0",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.1",
+        "winston": "^3.11.0",
+        "xlsx": "^0.18.5",
+        "xss": "^1.0.15"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0",
+        "supertest": "^6.3.3",
+        "@types/jest": "^29.5.5",
+        "tailwindcss": "^3.4.14",
+        "postcss": "^8.4.47",
+        "autoprefixer": "^10.4.20",
+        "daisyui": "^4.12.14"
+    },
+    "jest": {
+        "testEnvironment": "node",
+        "coverageDirectory": "coverage",
+        "collectCoverageFrom": [
+            "app/**/*.js",
+            "!app.js",
+            "!app/modules/db.psql.js",
+            "!app/modules/logger.js",
+            "!app/controllers/indexController.js",
+            "!app/routes/index.js",
+            "!app/modules/func-common.js"
+        ],
+        "testMatch": [
+            "**/tests/**/*.test.js"
+        ],
+        "coverageReporters": [
+            "text",
+            "lcov",
+            "html"
+        ],
+        "setupFilesAfterEnv": [
+            "<rootDir>/jest.setup.js"
+        ],
+        "coverageThreshold": {
+            "global": {
+                "branches": 96,
+                "functions": 100,
+                "lines": 99,
+                "statements": 99
+            }
+        }
+    }
+}
