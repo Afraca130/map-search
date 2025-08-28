@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="poi">
+
+    <!-- 모든 POI 데이터 삭제 (현행화를 위해) -->
+    <delete id="deleteAllPoi">
+        DELETE FROM poi
+    </delete>
+
+    <!-- POI 데이터 일괄 삽입 (id는 항상 서버에서 생성) -->
+    <insert id="insertPoi">
+        INSERT INTO poi (id, title, latitude, longitude)
+        VALUES 
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+                gen_random_uuid(),
+                '${item.title}',
+                ${item.latitude},
+                ${item.longitude}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 모든 POI 조회 -->
+    <select id="getAllPoi">
+        SELECT 
+            id,
+            title,
+            latitude,
+            longitude,
+            created_at
+        FROM poi
+        ORDER BY title
+    </select>
+
+    <!-- 이름으로 POI 검색 -->
+    <select id="searchPoiByName" parameterType="string">
+        SELECT 
+            id,
+            title,
+            latitude,
+            longitude,
+            created_at
+        FROM poi
+        WHERE title ILIKE CONCAT('%', #{searchText}, '%')
+        ORDER BY title
+    </select>
+
+</mapper>
