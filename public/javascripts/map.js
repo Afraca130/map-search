@@ -13,6 +13,10 @@ class MapManager {
     }
 
     initializeMap() {
+        console.log('지도 초기화 시작...');
+        console.log('Tmapv2 객체 확인:', typeof Tmapv2);
+        console.log('L 객체 확인:', typeof L);
+
         // TMAP 먼저 시도
         if (typeof Tmapv2 !== 'undefined') {
             try {
@@ -21,12 +25,17 @@ class MapManager {
                 return;
             } catch (error) {
                 console.error('TMAP 지도 초기화 오류:', error);
+                console.log('TMAP 초기화 실패, Leaflet으로 전환합니다.');
             }
+        } else {
+            console.log(
+                'Tmapv2 객체를 찾을 수 없습니다. API 키가 유효하지 않거나 스크립트 로드에 실패했습니다.',
+            );
         }
 
         // Leaflet으로 대체
         if (typeof L !== 'undefined') {
-            console.log('TMAP 사용 불가, Leaflet 지도로 대체...');
+            console.log('Leaflet 지도로 대체...');
             this.initializeLeafletMap();
         } else {
             console.error('지도 라이브러리를 찾을 수 없습니다.');
@@ -37,22 +46,24 @@ class MapManager {
     initializeTmapV2() {
         this.mapType = 'tmap';
 
-        this.map = new Tmapv2.Map('map_div', {
-            center: new Tmapv2.LatLng(37.5665, 126.978),
-            width: '100%',
-            height: '100vh',
-            zoom: 15,
-            zoomControl: true,
-            scrollwheel: true,
-        });
+        try {
+            this.map = new Tmapv2.Map('map_div', {
+                center: new Tmapv2.LatLng(37.566481622437934, 126.98502302169841), // 예제와 동일한 좌표
+                width: '100%',
+                height: '100vh',
+                zoom: 15,
+            });
 
-        console.log('TMAP V2 Map initialized successfully');
-
-        this.map.addListener('load', () => {
-            console.log('TMAP V2 지도가 성공적으로 로드되었습니다.');
-            this.updateStatus('TMAP 지도 로드 완료');
-            this.refreshPoiData();
-        });
+            // 지도 로드 완료 후 이벤트 처리
+            this.map.addListener('load', () => {
+                console.log('TMAP V2 지도가 성공적으로 로드되었습니다.');
+                this.updateStatus('TMAP 지도 로드 완료');
+                this.refreshPoiData();
+            });
+        } catch (error) {
+            console.error('TMAP 초기화 중 오류 발생:', error);
+            throw error;
+        }
     }
 
     initializeLeafletMap() {
@@ -216,20 +227,16 @@ class MapManager {
         if (this.mapType === 'tmap') {
             this.userMarker = new Tmapv2.Marker({
                 position: location,
-                icon: 'https://tmapapis.sktelecom.com/upload/tmap/marker/pin_b_m_a.png',
+                icon: '/images/pin-location.svg', // 로컬 이미지 사용
                 map: this.map,
                 title: '현재 위치',
             });
         } else if (this.mapType === 'leaflet') {
             const blueIcon = L.icon({
-                iconUrl:
-                    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-                shadowUrl:
-                    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconUrl: '/images/pin-location.svg', // 로컬 이미지 사용
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
                 popupAnchor: [1, -34],
-                shadowSize: [41, 41],
             });
 
             this.userMarker = L.marker(location, { icon: blueIcon })
@@ -328,7 +335,7 @@ class MapManager {
     addTmapPoiMarker(poi) {
         const marker = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(poi.latitude, poi.longitude),
-            icon: 'https://tmapapis.sktelecom.com/upload/tmap/marker/pin_r_m_a.png',
+            icon: '/images/pin-red.svg', // 로컬 이미지 사용
             map: this.map,
             title: poi.title,
         });
@@ -350,14 +357,10 @@ class MapManager {
 
     addLeafletPoiMarker(poi) {
         const redIcon = L.icon({
-            iconUrl:
-                'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-            shadowUrl:
-                'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconUrl: '/images/pin-red.svg', // 로컬 이미지 사용
             iconSize: [25, 41],
             iconAnchor: [12, 41],
             popupAnchor: [1, -34],
-            shadowSize: [41, 41],
         });
 
         const marker = L.marker([poi.latitude, poi.longitude], { icon: redIcon })
@@ -430,7 +433,7 @@ class MapManager {
     clearPoiMarkers() {
         this.poiMarkers.forEach(({ marker, infoWindow }) => {
             if (this.mapType === 'tmap') {
-                if (infoWindow) {
+                if (infoWindow && typeof infoWindow.close === 'function') {
                     infoWindow.close();
                 }
                 marker.setMap(null);
