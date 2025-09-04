@@ -135,10 +135,10 @@ http.createServer(app).listen('3535', () => {
     logger.info('Server started', {
         port: 3535,
         environment: process.env.NODE_ENV || 'development',
-        swaggerDocs: 'http://localhost:3536/api-docs',
+        swaggerDocs: 'http://localhost:3535/api-docs',
     });
     console.log(`✅  ${startupMessage}`);
-    console.log(`📚  Swagger API Documentation: http://localhost:3536/api-docs`);
+    console.log(`📚  Swagger API Documentation: http://localhost:3535/api-docs`);
 });
 
 module.exports = app;
