@@ -70,10 +70,6 @@ class PoiEntity {
             .join('\n');
     }
 
-    getCreateExtensionsSQL() {
-        return 'CREATE EXTENSION IF NOT EXISTS "pgcrypto";';
-    }
-
     getInsertSampleDataSQL() {
         if (!this.sampleData || this.sampleData.length === 0) {
             return '';
@@ -101,7 +97,7 @@ class PoiEntity {
     getSyncSQL() {
         return [
             this.getDropTableSQL(),
-            this.getCreateExtensionsSQL(),
+            'CREATE EXTENSION IF NOT EXISTS "pgcrypto";',
             this.getCreateTableSQL(),
             this.getCreateIndexesSQL(),
             this.getInsertSampleDataSQL(),
