@@ -163,6 +163,12 @@ exports.syncEntity = async (entity, onSuccess, onError) => {
             await client.query('BEGIN');
             console.log('🔄 Transaction started');
 
+            // Create required extensions
+            console.log('🔌 Creating PostgreSQL extensions...');
+            const extensionSQL = 'CREATE EXTENSION IF NOT EXISTS "pgcrypto";';
+            preSqlLog(extensionSQL);
+            await client.query(extensionSQL);
+
             // Execute SQL statements in sequence
             const dropSQL = entity.getDropTableSQL();
             if (dropSQL) {
