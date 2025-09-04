@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>T-MAP API 디버깅</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+            }
+            .debug-info {
+                background: #f0f0f0;
+                padding: 10px;
+                margin: 10px 0;
+                border-radius: 5px;
+            }
+            .error {
+                background: #ffebee;
+                color: #c62828;
+            }
+            .success {
+                background: #e8f5e8;
+                color: #2e7d32;
+            }
+            #map_div {
+                border: 1px solid #ccc;
+                margin: 10px 0;
+                height: 400px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>T-MAP API 디버깅</h1>
+
+        <div class="debug-info">
+            <h3>1. API 스크립트 로드 테스트</h3>
+            <div id="script-status">로딩 중...</div>
+        </div>
+
+        <div class="debug-info">
+            <h3>2. Tmapv2 객체 확인</h3>
+            <div id="object-status">확인 중...</div>
+        </div>
+
+        <div class="debug-info">
+            <h3>3. 지도 초기화 테스트</h3>
+            <div id="map-status">대기 중...</div>
+        </div>
+
+        <div id="map_div"></div>
+
+        <div class="debug-info">
+            <h3>4. 네트워크 요청 확인</h3>
+            <p>브라우저 개발자 도구 → Network 탭에서 T-MAP API 요청을 확인하세요.</p>
+            <p>예상 URL: <code>https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=...</code></p>
+        </div>
+
+        <!-- T-MAP API 스크립트 로드 -->
+        <script>
+            // 스크립트 로드 상태 확인
+            function checkScriptLoad() {
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src =
+                    'https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=VxOtMgjZGc7kTP50VWRKC62WBf2QRzxeaz2ViIqB';
+
+                script.onload = function () {
+                    document.getElementById('script-status').innerHTML =
+                        '<span class="success">✅ T-MAP API 스크립트 로드 성공</span>';
+                    checkTmapv2Object();
+                };
+
+                script.onerror = function () {
+                    document.getElementById('script-status').innerHTML =
+                        '<span class="error">❌ T-MAP API 스크립트 로드 실패</span>';
+                    document.getElementById('object-status').innerHTML =
+                        '<span class="error">❌ 스크립트 로드 실패로 인해 Tmapv2 객체 없음</span>';
+                };
+
+                document.head.appendChild(script);
+            }
+
+            // Tmapv2 객체 확인
+            function checkTmapv2Object() {
+                setTimeout(() => {
+                    if (typeof Tmapv2 !== 'undefined') {
+                        document.getElementById('object-status').innerHTML =
+                            '<span class="success">✅ Tmapv2 객체 발견</span>';
+                        testMapInitialization();
+                    } else {
+                        document.getElementById('object-status').innerHTML =
+                            '<span class="error">❌ Tmapv2 객체를 찾을 수 없음</span>';
+                    }
+                }, 1000);
+            }
+
+            // 지도 초기화 테스트
+            function testMapInitialization() {
+                try {
+                    const map = new Tmapv2.Map('map_div', {
+                        center: new Tmapv2.LatLng(37.566481622437934, 126.98502302169841),
+                        width: '100%',
+                        height: '400px',
+                        zoom: 15,
+                    });
+
+                    document.getElementById('map-status').innerHTML =
+                        '<span class="success">✅ T-MAP 지도 초기화 성공</span>';
+                } catch (error) {
+                    document.getElementById('map-status').innerHTML =
+                        '<span class="error">❌ 지도 초기화 실패: ' + error.message + '</span>';
+                }
+            }
+
+            // 페이지 로드 시 시작
+            window.onload = function () {
+                console.log('T-MAP API 디버깅 시작');
+                checkScriptLoad();
+            };
+        </script>
+    </body>
+</html>
