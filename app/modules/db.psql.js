@@ -96,34 +96,6 @@ exports.select = (mapperName, queryId, param, onSuccess, onError) => {
         });
 };
 
-/** Execute SELECT query returning single row as object */
-exports.selectOne = (mapperName, queryId, param, onSuccess, onError) => {
-    sql = mapper.getStatement(mapperName, queryId, param, format);
-    preSqlLog(sql);
-
-    getPool()
-        .query(sql)
-        .then((result) => {
-            postSqlLog(result.rowCount);
-
-            if (typeof onSuccess === 'function') {
-                const funcCmmn = global.funcCmmn || require('./func-common');
-                onSuccess(result.rowCount ? funcCmmn.snakeToCamel(result.rows[0]) : null);
-            } else {
-                return;
-            }
-        })
-        .catch((err) => {
-            postSqlLog();
-
-            if (typeof onError === 'function') {
-                onError(err);
-            } else {
-                return;
-            }
-        });
-};
-
 /** Execute INSERT query returning count of inserted rows */
 exports.insert = (mapperName, queryId, param, onSuccess, onError) => {
     sql = mapper.getStatement(mapperName, queryId, param, format);
@@ -136,89 +108,6 @@ exports.insert = (mapperName, queryId, param, onSuccess, onError) => {
 
             if (typeof onSuccess === 'function') {
                 onSuccess(result.rowCount);
-            } else {
-                return;
-            }
-        })
-        .catch((err) => {
-            postSqlLog();
-
-            if (typeof onError === 'function') {
-                onError(err);
-            } else {
-                return;
-            }
-        });
-};
-
-/** Execute INSERT query returning inserted rows data */
-exports.insertReturn = (mapperName, queryId, param, onSuccess, onError) => {
-    sql = mapper.getStatement(mapperName, queryId, param, format);
-    preSqlLog(sql);
-
-    getPool()
-        .query(sql)
-        .then((result) => {
-            postSqlLog(result.rowCount);
-
-            if (typeof onSuccess === 'function') {
-                const funcCmmn = global.funcCmmn || require('./func-common');
-                onSuccess(funcCmmn.snakeToCamel(result.rows));
-            } else {
-                return;
-            }
-        })
-        .catch((err) => {
-            postSqlLog();
-
-            if (typeof onError === 'function') {
-                onError(err);
-            } else {
-                return;
-            }
-        });
-};
-
-/** Execute UPDATE query returning count of updated rows */
-exports.update = (mapperName, queryId, param, onSuccess, onError) => {
-    sql = mapper.getStatement(mapperName, queryId, param, format);
-    preSqlLog(sql);
-
-    getPool()
-        .query(sql)
-        .then((result) => {
-            postSqlLog(result.rowCount);
-
-            if (typeof onSuccess === 'function') {
-                onSuccess(result.rowCount);
-            } else {
-                return;
-            }
-        })
-        .catch((err) => {
-            postSqlLog();
-
-            if (typeof onError === 'function') {
-                onError(err);
-            } else {
-                return;
-            }
-        });
-};
-
-/** Execute UPDATE query returning updated rows data */
-exports.updateReturn = (mapperName, queryId, param, onSuccess, onError) => {
-    sql = mapper.getStatement(mapperName, queryId, param, format);
-    preSqlLog(sql);
-
-    getPool()
-        .query(sql)
-        .then((result) => {
-            postSqlLog(result.rowCount);
-
-            if (typeof onSuccess === 'function') {
-                const funcCmmn = global.funcCmmn || require('./func-common');
-                onSuccess(funcCmmn.snakeToCamel(result.rows));
             } else {
                 return;
             }
@@ -259,16 +148,6 @@ exports.delete = (mapperName, queryId, param, onSuccess, onError) => {
                 return;
             }
         });
-};
-
-exports.getConnection = () => {
-    return getPool().connect();
-};
-
-exports.getStatement = (mapperName, queryId, param) => {
-    const statement = mapper.getStatement(mapperName, queryId, param, format);
-    preSqlLog(statement);
-    return statement;
 };
 
 /* Entity Sync - Synchronize database tables based on entity definitions */
